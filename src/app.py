@@ -10,7 +10,12 @@ connection_string = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWOR
 engine = create_engine(connection_string).execution_options(autocommit=True)
 con = ps.connect(connection_string)
 cursor =con.cursor()
-
+cursor.execute("""
+    DROP TABLE IF EXISTS publishers CASCADE;
+    DROP TABLE IF EXISTS authors CASCADE;
+    DROP TABLE IF EXISTS books CASCADE;
+    DROP TABLE IF EXISTS book_authors CASCADE; 
+""")
 cursor.execute("""CREATE TABLE publishers(
     publisher_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -88,12 +93,12 @@ INSERT INTO book_authors (book_id, author_id) VALUES (8, 2);
 INSERT INTO book_authors (book_id, author_id) VALUES (9, 4);
 INSERT INTO book_authors (book_id, author_id) VALUES (10, 1);
 """)
-con.commit
+con.commit()
 #prueba con el fetchall
-#rows = cursor.fetchall()
+cursor.execute("SELECT * FROM publishers;")
 
-#print(pd.DataFrame(rows))
+print(cursor.fetchall())
 
-# 4) Use pandas to print one of the tables as dataframes using read_sql function
+# # 4) Use pandas to print one of the tables as dataframes using read_sql function
 result_dataFrame = pd.read_sql("Select * from publishers;", engine)
 print(result_dataFrame)
